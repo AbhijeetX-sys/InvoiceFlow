@@ -67,3 +67,29 @@ Once both servers are running:
 7. **Trace Logs & Analytics:**
    * Look at the **Stock Log** tab to see history movements (`INITIAL_STOCK`, `SALE`, or `SALE_CANCELLED`).
    * Observe the **Dashboard** metrics cards and Chart.js line/doughnut charts updating instantly.
+
+## Screenshots
+
+### Dashboard
+
+![Dashboard](screenshots/dashboard.png)
+
+### Customer Management
+
+![Customers](screenshots/customers.png)
+
+### Product and Stock Management
+
+![Products](screenshots/products.png)
+
+### Invoice Management
+
+![Invoices](screenshots/invoices.png)
+
+### Business Profile
+
+![Business Profile](screenshots/business-profile.png)
+
+### Generated Invoice PDF
+
+![Invoice PDF](screenshots/invoice-pdf.png)
