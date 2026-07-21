@@ -1,0 +1,44 @@
+{
+    "username":"Abhi",
+    "email":"abhi@gmail.com",
+    "password":"123456"
+}
+
+customer 
+
+{
+  "username": "Rahul Sharma",
+  "email": "rahul@example.com",
+  "phone": "9876500000",
+  "address": "Lucknow, Uttar Pradesh"
+}
+
+{
+  "username": "Priya Verma",
+  "email": "priya@example.com",
+  "phone": "9876500001",
+  "address": "Kanpur, Uttar Pradesh"
+}
+
+
+
+{
+    "customer_id": 1,
+    "products": [
+        {
+            "product_id": 1,
+            "quantity": 2
+        },
+        {
+            "product_id": 2,
+            "quantity": 1
+        }
+    ]
+} 
+
+
+{
+  "username": "Test User",
+  "email": "testuser@example.com",
+  "password": "123456"
+}

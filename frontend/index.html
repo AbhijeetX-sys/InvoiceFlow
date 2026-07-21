@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InvoiceFlow - Modern Invoice Manager</title>
+  
+  <!-- Modern Typography (Outfit) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons (CDN) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Chart.js (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body class="light-theme">
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- AUTHENTICATION VIEW (Login / Register) -->
+  <div id="authView" class="auth-view-container">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-logo">
+          <i data-lucide="file-text" class="logo-icon"></i>
+          <span>InvoiceFlow</span>
+        </div>
+        <p id="authSubtitle">Manage your business invoicing effortlessly</p>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm" class="auth-form">
+        <h2>Welcome Back</h2>
+        <div class="form-group">
+          <label for="loginEmail">Email Address</label>
+          <div class="input-icon-wrapper">
+            <i data-lucide="mail"></i>
+            <input type="email" id="loginEmail" placeholder="name@company.com" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <div class="input-icon-wrapper">
+            <i data-lucide="lock"></i>
+            <input type="password" id="loginPassword" placeholder="••••••••" required>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">
+          <span>Sign In</span>
+          <i data-lucide="arrow-right"></i>
+        </button>
+        <p class="auth-switch">Don't have an account? <a href="#" id="switchToRegister">Register here</a></p>
+      </form>
+
+      <!-- Register Form (Hidden by default) -->
+      <form id="registerForm" class="auth-form hidden">
+        <h2>Create Account</h2>
+        <div class="form-group">
+          <label for="registerUsername">Username</label>
+          <div class="input-icon-wrapper">
+            <i data-lucide="user"></i>
+            <input type="text" id="registerUsername" placeholder="johndoe" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="registerEmail">Email Address</label>
+          <div class="input-icon-wrapper">
+            <i data-lucide="mail"></i>
+            <input type="email" id="registerEmail" placeholder="name@company.com" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="registerPassword">Password</label>
+          <div class="input-icon-wrapper">
+            <i data-lucide="lock"></i>
+            <input type="password" id="registerPassword" placeholder="••••••••" required>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">
+          <span>Create Account</span>
+          <i data-lucide="user-plus"></i>
+        </button>
+        <p class="auth-switch">Already have an account? <a href="#" id="switchToLogin">Sign in here</a></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- MAIN APPLICATION LAYOUT (Hidden until authenticated) -->
+  <div id="appLayout" class="app-layout hidden">
+    <!-- Sidebar Navigation -->
+    <aside class="app-sidebar">
+      <div class="sidebar-header">
+        <div class="app-logo">
+          <i data-lucide="file-text" class="logo-icon"></i>
+          <span>InvoiceFlow</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-menu">
+        <a href="#dashboard" class="menu-item active" data-view="dashboard">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="#invoices" class="menu-item" data-view="invoices">
+          <i data-lucide="receipt"></i>
+          <span>Invoices</span>
+        </a>
+        <a href="#products" class="menu-item" data-view="products">
+          <i data-lucide="package"></i>
+          <span>Products</span>
+        </a>
+        <a href="#customers" class="menu-item" data-view="customers">
+          <i data-lucide="users"></i>
+          <span>Customers</span>
+        </a>
+        <a href="#business-profile" class="menu-item" data-view="business-profile">
+          <i data-lucide="briefcase"></i>
+          <span>Business Profile</span>
+        </a>
+        <a href="#stock-history" class="menu-item" data-view="stock-history">
+          <i data-lucide="history"></i>
+          <span>Stock Log</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="userAvatar">U</div>
+          <div class="user-details">
+            <span class="user-name" id="profileUsername">Loading...</span>
+            <span class="user-email" id="profileEmail">...</span>
+          </div>
+        </div>
+        <button id="logoutBtn" class="btn btn-logout" title="Sign Out">
+          <i data-lucide="log-out"></i>
+          <span>Sign Out</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Panel -->
+    <main class="app-main">
+      
+      <!-- DASHBOARD VIEW -->
+      <section id="view-dashboard" class="view-panel active">
+        <div class="panel-header">
+          <div>
+            <h1>Dashboard Overview</h1>
+            <p class="panel-subtitle">Real-time metrics and system alerts</p>
+          </div>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-icon bg-blue-light">
+              <i data-lucide="indian-rupee" class="text-blue"></i>
+            </div>
+            <div class="metric-info">
+              <h3>Total Sales</h3>
+              <p id="totalSales" class="metric-value">₹0.00</p>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon bg-purple-light">
+              <i data-lucide="file-spreadsheet" class="text-purple"></i>
+            </div>
+            <div class="metric-info">
+              <h3>Total Invoices</h3>
+              <p id="totalInvoices" class="metric-value">0</p>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon bg-green-light">
+              <i data-lucide="users-2" class="text-green"></i>
+            </div>
+            <div class="metric-info">
+              <h3>Total Customers</h3>
+              <p id="totalCustomers" class="metric-value">0</p>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-icon bg-amber-light">
+              <i data-lucide="boxes" class="text-amber"></i>
+            </div>
+            <div class="metric-info">
+              <h3>Total Products</h3>
+              <p id="totalProducts" class="metric-value">0</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="dashboard-charts">
+          <div class="chart-card">
+            <h3>Monthly Sales (₹)</h3>
+            <div class="canvas-wrapper">
+              <canvas id="monthlySalesChart"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <h3>Top Selling Products</h3>
+            <div class="canvas-wrapper">
+              <canvas id="topProductsChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stock and Table section -->
+        <div class="dashboard-grid-two">
+          <div class="dashboard-table-card card-full">
+            <div class="card-header">
+              <h3>Low Stock Alerts</h3>
+              <span class="badge badge-warning">Needs Attention</span>
+            </div>
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Product Name</th>
+                    <th>Current Stock</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="lowStockList">
+                  <!-- Low Stock items go here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- INVOICES VIEW -->
+      <section id="view-invoices" class="view-panel">
+        <div class="panel-header header-tabs">
+          <div>
+            <h1>Invoices</h1>
+            <p class="panel-subtitle">Generate bills and track billing history</p>
+          </div>
+          <div class="tab-controls">
+            <button class="tab-btn active" data-tab="invoice-list">Invoice Registry</button>
+            <button class="tab-btn" data-tab="invoice-create">
+              <i data-lucide="plus"></i> Create Invoice
+            </button>
+          </div>
+        </div>
+
+        <!-- Invoice List Tab -->
+        <div id="tab-invoice-list" class="tab-panel active">
+          <!-- Filters -->
+          <div class="filter-bar">
+            <div class="form-group row-inline">
+              <label for="filterStartDate">Start Date:</label>
+              <input type="date" id="filterStartDate">
+            </div>
+            <div class="form-group row-inline">
+              <label for="filterEndDate">End Date:</label>
+              <input type="date" id="filterEndDate">
+            </div>
+            <button id="applyFiltersBtn" class="btn btn-secondary">
+              <i data-lucide="filter"></i> Filter
+            </button>
+            <button id="clearFiltersBtn" class="btn btn-text">Clear</button>
+          </div>
+
+          <div class="table-container shadow">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Invoice ID</th>
+                  <th>Invoice Number</th>
+                  <th>Customer</th>
+                  <th>GST Total</th>
+                  <th>Grand Total</th>
+                  <th>Created At</th>
+                  <th class="actions-header">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="invoiceTableBody">
+                <!-- Loaded from API -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Invoice Create Tab -->
+        <div id="tab-invoice-create" class="tab-panel">
+          <form id="createInvoiceForm" class="invoice-creator-form">
+            <div class="form-card">
+              <h3>Customer Information</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="invoiceCustomerSelect">Select Customer <span class="required">*</span></label>
+                  <div class="select-wrapper">
+                    <select id="invoiceCustomerSelect" required>
+                      <option value="">-- Choose a Customer --</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-card">
+              <div class="card-header">
+                <h3>Product Details</h3>
+                <button type="button" id="addInvoiceRowBtn" class="btn btn-secondary btn-sm">
+                  <i data-lucide="plus"></i> Add Row
+                </button>
+              </div>
+              <div class="table-container items-table-container">
+                <table class="data-table items-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 40%;">Product Name <span class="required">*</span></th>
+                      <th style="width: 15%;">Available Stock</th>
+                      <th style="width: 15%;">Qty <span class="required">*</span></th>
+                      <th style="width: 15%;">Rate (₹)</th>
+                      <th style="width: 10%;">GST (%)</th>
+                      <th style="width: 15%;">Total (₹)</th>
+                      <th style="width: 5%;"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="invoiceItemsTableBody">
+                    <!-- Dynamic Rows -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Totals Area -->
+            <div class="invoice-summary-box">
+              <div class="summary-line">
+                <span>Subtotal (Excl. Tax):</span>
+                <span id="invoiceSubtotal">₹0.00</span>
+              </div>
+              <div class="summary-line">
+                <span>GST Total:</span>
+                <span id="invoiceGstTotal">₹0.00</span>
+              </div>
+              <hr>
+              <div class="summary-line grand-total">
+                <span>Grand Total:</span>
+                <span id="invoiceGrandTotal">₹0.00</span>
+              </div>
+              
+              <div class="summary-actions">
+                <button type="submit" class="btn btn-primary btn-lg">
+                  <i data-lucide="check-circle-2"></i> Save and Generate Invoice
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- PRODUCTS VIEW -->
+      <section id="view-products" class="view-panel">
+        <div class="panel-header">
+          <div>
+            <h1>Products Catalog</h1>
+            <p class="panel-subtitle">Manage inventory items, rates, and stock history</p>
+          </div>
+          <button id="openAddProductModalBtn" class="btn btn-primary">
+            <i data-lucide="plus"></i> Add Product
+          </button>
+        </div>
+
+        <div class="table-container shadow">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>GST Rate</th>
+                <th>Stock Status</th>
+                <th class="actions-header">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="productTableBody">
+              <!-- Loaded from API -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- CUSTOMERS VIEW -->
+      <section id="view-customers" class="view-panel">
+        <div class="panel-header">
+          <div>
+            <h1>Customers Registry</h1>
+            <p class="panel-subtitle">Maintain client contact and address cards</p>
+          </div>
+          <button id="openAddCustomerModalBtn" class="btn btn-primary">
+            <i data-lucide="plus"></i> Add Customer
+          </button>
+        </div>
+
+        <div class="table-container shadow">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Customer Name</th>
+                <th>Email Address</th>
+                <th>Phone Number</th>
+                <th>Billing Address</th>
+                <th class="actions-header">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="customerTableBody">
+              <!-- Loaded from API -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- BUSINESS PROFILE VIEW -->
+      <section id="view-business-profile" class="view-panel">
+        <div class="panel-header">
+          <div>
+            <h1>Business Profile</h1>
+            <p class="panel-subtitle">Setup organization coordinates used in PDF billing printouts</p>
+          </div>
+        </div>
+
+        <!-- Setup Alert Banner if Profile not present -->
+        <div id="noBusinessProfileAlert" class="alert-banner alert-warning hidden">
+          <i data-lucide="alert-triangle"></i>
+          <div>
+            <strong>Missing Business Profile!</strong> You must complete this profile before you can print PDF invoices.
+          </div>
+        </div>
+
+        <div class="form-container-card">
+          <form id="businessProfileForm">
+            <div class="form-grid-two">
+              <div class="form-group">
+                <label for="businessName">Registered Business Name <span class="required">*</span></label>
+                <input type="text" id="businessName" placeholder="Alpha Enterprise Pvt Ltd" required>
+              </div>
+
+              <div class="form-group">
+                <label for="businessOwner">Owner / Authorized signatory Name <span class="required">*</span></label>
+                <input type="text" id="businessOwner" placeholder="John Doe" required>
+              </div>
+
+              <div class="form-group">
+                <label for="businessEmail">Billing Email Address <span class="required">*</span></label>
+                <input type="email" id="businessEmail" placeholder="billing@alpha.com" required>
+              </div>
+
+              <div class="form-group">
+                <label for="businessPhone">Contact Phone Number <span class="required">*</span></label>
+                <input type="text" id="businessPhone" placeholder="+91 98765 43210" required>
+              </div>
+
+              <div class="form-group col-span-2">
+                <label for="businessAddress">Official Billing Address <span class="required">*</span></label>
+                <textarea id="businessAddress" rows="3" placeholder="101, Business Tower, Tech Park Road, Mumbai - 400001" required></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="businessGst">GSTIN (GST Tax Number) <span class="required">*</span></label>
+                <input type="text" id="businessGst" placeholder="27AAAAA1111A1Z1" required>
+              </div>
+            </div>
+
+            <div class="form-actions mt-6">
+              <button type="submit" id="saveBusinessProfileBtn" class="btn btn-primary btn-lg">
+                <i data-lucide="save"></i> Save Profile Details
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- STOCK LOG VIEW -->
+      <section id="view-stock-history" class="view-panel">
+        <div class="panel-header">
+          <div>
+            <h1>Inventory Audit Log</h1>
+            <p class="panel-subtitle">Trace historic movements and adjustments of stock quantities</p>
+          </div>
+        </div>
+
+        <div class="table-container shadow">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Event Action</th>
+                <th>Previous Stock</th>
+                <th>Quantity Shift</th>
+                <th>Closing Balance</th>
+                <th>Invoice ID</th>
+                <th>Time Logged</th>
+              </tr>
+            </thead>
+            <tbody id="stockLogTableBody">
+              <!-- Loaded from API -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODALS -->
+
+  <!-- Customer Create / Edit Modal -->
+  <div id="customerModal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="customerModalTitle">Add Customer</h3>
+        <button type="button" class="btn-close-modal" onclick="closeModal('customerModal')">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <form id="customerForm">
+        <input type="hidden" id="customerFormId">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="customerUsername">Customer Name <span class="required">*</span></label>
+            <input type="text" id="customerUsername" placeholder="Aman Sharma" required>
+          </div>
+          <div class="form-group">
+            <label for="customerEmail">Email Address</label>
+            <input type="email" id="customerEmail" placeholder="aman@gmail.com">
+          </div>
+          <div class="form-group">
+            <label for="customerPhone">Phone Number <span class="required">*</span></label>
+            <input type="text" id="customerPhone" placeholder="+91 99998 88887" required>
+          </div>
+          <div class="form-group">
+            <label for="customerAddress">Billing Address <span class="required">*</span></label>
+            <textarea id="customerAddress" rows="3" placeholder="Flat 402, Sector 12, Noida, UP" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('customerModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Product Create / Edit Modal -->
+  <div id="productModal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="productModalTitle">Add Product</h3>
+        <button type="button" class="btn-close-modal" onclick="closeModal('productModal')">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <form id="productForm">
+        <input type="hidden" id="productFormId">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="productName">Product Title <span class="required">*</span></label>
+            <input type="text" id="productName" placeholder="Ergonomic Desk Chair" required>
+          </div>
+          <div class="form-group">
+            <label for="productCategory">Category <span class="required">*</span></label>
+            <input type="text" id="productCategory" placeholder="Office Furniture" required>
+          </div>
+          <div class="form-group">
+            <label for="productDescription">Product Description</label>
+            <textarea id="productDescription" rows="2" placeholder="Premium breathable mesh back with lumbar support"></textarea>
+          </div>
+          <div class="form-grid-two">
+            <div class="form-group">
+              <label for="productPrice">Unit Rate (Excl. Tax) <span class="required">*</span></label>
+              <input type="number" step="0.01" id="productPrice" placeholder="4999.00" required>
+            </div>
+            <div class="form-group">
+              <label for="productGst">GST Percentage (%) <span class="required">*</span></label>
+              <input type="number" step="0.1" id="productGst" placeholder="18.0" required>
+            </div>
+          </div>
+          <div class="form-group" id="productStockWrapper">
+            <label for="productStock">Initial Quantity in Stock <span class="required">*</span></label>
+            <input type="number" id="productStock" placeholder="25" min="0" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('productModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Product Restock Modal -->
+  <div id="restockModal" class="modal-overlay hidden">
+    <div class="modal-box modal-sm">
+      <div class="modal-header">
+        <h3>Restock Inventory</h3>
+        <button type="button" class="btn-close-modal" onclick="closeModal('restockModal')">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <form id="restockForm">
+        <input type="hidden" id="restockProductId">
+        <div class="modal-body">
+          <p id="restockProductMeta" class="modal-meta-desc">Product: Loading...</p>
+          <div class="form-group">
+            <label for="restockQuantity">Replenish Quantity <span class="required">*</span></label>
+            <input type="number" id="restockQuantity" placeholder="10" min="1" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('restockModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add to Inventory</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Invoice Detail Modal -->
+  <div id="invoiceDetailModal" class="modal-overlay hidden">
+    <div class="modal-box modal-lg">
+      <div class="modal-header header-invoice-detail">
+        <div class="invoice-number-header">
+          <h3 id="invoiceDetailNumber">INV-0000</h3>
+          <span id="invoiceDetailDate" class="modal-sub-label">01-01-2026</span>
+        </div>
+        <div class="header-buttons">
+          <button id="downloadInvoicePdfBtn" class="btn btn-primary">
+            <i data-lucide="download"></i> Download PDF
+          </button>
+          <button type="button" class="btn-close-modal" onclick="closeModal('invoiceDetailModal')">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+      </div>
+      <div class="modal-body modal-body-print-preview">
+        <!-- Invoice content template -->
+        <div class="invoice-preview-sheet">
+          <div class="preview-grid-two-cols">
+            <div>
+              <h4 class="preview-section-title">Seller Details</h4>
+              <p id="invPrevSellerName" class="bold-text"></p>
+              <p id="invPrevSellerOwner"></p>
+              <p id="invPrevSellerPhone"></p>
+              <p id="invPrevSellerEmail"></p>
+              <p id="invPrevSellerGst" class="preview-gst-num"></p>
+            </div>
+            <div>
+              <h4 class="preview-section-title">Customer Details</h4>
+              <p id="invPrevCustName" class="bold-text"></p>
+              <p id="invPrevCustPhone"></p>
+              <p id="invPrevCustEmail"></p>
+              <p id="invPrevCustAddress" class="addr-box"></p>
+            </div>
+          </div>
+
+          <div class="invoice-preview-items-box">
+            <table class="preview-items-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th class="text-right">Price</th>
+                  <th class="text-right">Qty</th>
+                  <th class="text-right">GST %</th>
+                  <th class="text-right">Tax Amt</th>
+                  <th class="text-right">Total</th>
+                </tr>
+              </thead>
+              <tbody id="invPrevItemsBody">
+                <!-- Items list loaded dynamically -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="preview-totals-box">
+            <div class="totals-row">
+              <span>Subtotal:</span>
+              <span id="invPrevSubtotal">₹0.00</span>
+            </div>
+            <div class="totals-row">
+              <span>GST Total:</span>
+              <span id="invPrevGst">₹0.00</span>
+            </div>
+            <div class="totals-row bold-total">
+              <span>Grand Total:</span>
+              <span id="invPrevGrandTotal">₹0.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global scripts definitions -->
+  <script>
+    // Global helper helper functions for modals to load early
+    window.closeModal = function(modalId) {
+      document.getElementById(modalId).classList.add('hidden');
+    }
+    window.openModal = function(modalId) {
+      document.getElementById(modalId).classList.remove('hidden');
+    }
+  </script>
+
+  <!-- Load Modules -->
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
