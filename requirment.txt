@@ -1,0 +1,7 @@
+Flask
+Flask-SQLAlchemy
+Flask-JWT-Extended
+reportlab
+psycopg2-binary
+flask-cors
+gunicorn
