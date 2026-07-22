@@ -1,24 +1,18 @@
-import { defineConfig } from 'vite';
-
-
 import { defineConfig } from "vite";
-
-export default defineConfig({
-  preview: {
-    allowedHosts: ["gallant-presence-production-034d.up.railway.app"]
-  }
-});
-
 
 export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/api': {
-        target: 'http://127.0.0.1:5000',
+      "/api": {
+        target: "http://127.0.0.1:5000",
         changeOrigin: true,
         secure: false
       }
     }
+  },
+
+  preview: {
+    allowedHosts: ["gallant-presence-production-034d.up.railway.app"]
   }
 });
