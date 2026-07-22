@@ -523,22 +523,12 @@ async function openInvoiceDetailModal(invoiceId) {
 // Download PDF document as blob attachment
 async function downloadInvoicePdf(invoiceId) {
   try {
-    const token = localStorage.getItem('token');
-    
-    // Direct browser download bypasses secure apiFetch client structure but requires Token
     showToast('Compiling PDF file... please wait.', 'info');
     
-    const response = await fetch(`/api/invoices/${invoiceId}/pdf`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
+    const response = await apiFetch(`/api/invoices/${invoiceId}/pdf`);
 
-    if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error('Business profile or Customer not found. Complete profile details first!');
-      }
-      throw new Error(`Failed to compile PDF (status ${response.status})`);
+    if (!response) {
+      throw new Error('Failed to retrieve PDF data');
     }
 
     const blob = await response.blob();
