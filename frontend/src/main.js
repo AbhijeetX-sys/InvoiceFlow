@@ -134,18 +134,39 @@ export async function loadUserProfile() {
 }
 
 function updateAuthUI() {
+  const landingView = document.getElementById('landingView');
   const authView = document.getElementById('authView');
   const appLayout = document.getElementById('appLayout');
   
   if (state.token) {
+    if (landingView) landingView.classList.add('hidden');
     authView.classList.add('hidden');
     appLayout.classList.remove('hidden');
     loadUserProfile();
     // Load initial view
     navigate(window.location.hash || '#dashboard');
   } else {
-    authView.classList.remove('hidden');
+    if (landingView) landingView.classList.remove('hidden');
+    authView.classList.add('hidden');
     appLayout.classList.add('hidden');
+  }
+  lucide.createIcons();
+}
+
+export function showAuthForm(mode = 'login') {
+  const landingView = document.getElementById('landingView');
+  const authView = document.getElementById('authView');
+  if (landingView) landingView.classList.add('hidden');
+  if (authView) authView.classList.remove('hidden');
+
+  const loginForm = document.getElementById('loginForm');
+  const registerForm = document.getElementById('registerForm');
+  if (mode === 'login') {
+    loginForm.classList.remove('hidden');
+    registerForm.classList.add('hidden');
+  } else {
+    loginForm.classList.add('hidden');
+    registerForm.classList.remove('hidden');
   }
   lucide.createIcons();
 }
@@ -265,6 +286,53 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('registerForm').classList.add('hidden');
     document.getElementById('loginForm').classList.remove('hidden');
   });
+
+  // Landing page button listeners
+  const landingLogin = document.getElementById('landingLoginBtn');
+  if (landingLogin) landingLogin.addEventListener('click', () => showAuthForm('login'));
+
+  const landingRegisterNav = document.getElementById('landingGetStartedNavBtn');
+  if (landingRegisterNav) landingRegisterNav.addEventListener('click', () => showAuthForm('register'));
+
+  const landingGetStarted = document.getElementById('landingGetStartedBtn');
+  if (landingGetStarted) landingGetStarted.addEventListener('click', () => showAuthForm('register'));
+
+  const landingCta = document.getElementById('landingCtaBtn');
+  if (landingCta) landingCta.addEventListener('click', () => showAuthForm('register'));
+
+  const logoHome = document.getElementById('authLogoHome');
+  if (logoHome) {
+    logoHome.addEventListener('click', () => {
+      updateAuthUI();
+    });
+  }
+
+  // Live Demo autologin hook
+  const handleDemoLogin = async (e) => {
+    e.preventDefault();
+    try {
+      showToast('Authenticating with live demo account...', 'info');
+      const data = await apiFetch('/api/login', {
+        method: 'POST',
+        body: {
+          email: 'demo_user_1784736779@invoiceflow.com',
+          password: 'pass_1784736779'
+        }
+      });
+      if (data && data.token) {
+        showToast('Demo Access Granted! Welcome to InvoiceFlow.', 'success');
+        setToken(data.token);
+      }
+    } catch (err) {
+      showToast('Demo access failed. Please register a free account!', 'error');
+    }
+  };
+
+  const demoBtn = document.getElementById('landingDemoBtn');
+  if (demoBtn) demoBtn.addEventListener('click', handleDemoLogin);
+
+  const demoNavLink = document.querySelector('.nav-demo-link');
+  if (demoNavLink) demoNavLink.addEventListener('click', handleDemoLogin);
 
   // Logout button
   document.getElementById('logoutBtn').addEventListener('click', logout);
