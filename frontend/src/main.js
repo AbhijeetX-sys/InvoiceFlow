@@ -42,6 +42,10 @@ export function showToast(message, type = 'info') {
 // ==========================================================================
 // SECURE API CLIENT
 // ==========================================================================
+const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? '' 
+  : 'https://invoiceflow-production-2c53.up.railway.app';
+
 export async function apiFetch(url, options = {}) {
   // Set default headers
   const headers = new Headers(options.headers || {});
@@ -63,7 +67,7 @@ export async function apiFetch(url, options = {}) {
   };
 
   try {
-    const response = await fetch(url, fetchOptions);
+    const response = await fetch(`${BASE_URL}${url}`, fetchOptions);
     
     // Handle unauthorized sessions
     if (response.status === 401 && state.token) {
