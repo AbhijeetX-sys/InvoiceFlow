@@ -12,6 +12,16 @@ if os.environ.get("PORT") and not os.environ.get("LOCAL_DEV"):
 else:
     BACKEND_URL = "http://127.0.0.1:5000"
 
+def safe_copy_headers(source_headers, target_handler):
+    ignore_headers = {
+        'connection', 'transfer-encoding', 'content-length', 
+        'keep-alive', 'proxy-authenticate', 'proxy-authorization', 
+        'te', 'trailers', 'upgrade', 'server'
+    }
+    for header, val in source_headers:
+        if header.lower() not in ignore_headers:
+            target_handler.send_header(header, val)
+
 class ProxyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path.startswith('/api/'):
@@ -55,15 +65,13 @@ class ProxyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
         try:
             with urllib.request.urlopen(req) as response:
                 self.send_response(response.status)
-                for header, value in response.getheaders():
-                    self.send_header(header, value)
+                safe_copy_headers(response.getheaders(), self)
                 self.end_headers()
                 self.wfile.write(response.read())
         except urllib.error.HTTPError as e:
             # Handle HTTP errors from Flask app (e.g. 400, 404, 401)
             self.send_response(e.code)
-            for header, value in e.headers.items():
-                self.send_header(header, value)
+            safe_copy_headers(e.headers.items(), self)
             self.end_headers()
             self.wfile.write(e.read())
         except Exception as e:
