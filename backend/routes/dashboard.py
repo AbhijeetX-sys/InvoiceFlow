@@ -59,12 +59,14 @@ def get_month_sales():
 
 
     monthly_sales = db.session.query(
-        func.strftime('%Y-%m',Invoice.created_at).label('month'),
+        func.extract('year',Invoice.created_at).label('year'),
+        func.extract('month',Invoice.created_at).label('month'),
         func.sum(Invoice.total_amount).label('sales')
     ).filter(
         Invoice.user_id == user_id
     ).group_by(
-        func.strftime('%Y-%m',Invoice.created_at)
+        func.extract('year',Invoice.created_at),
+        func.extract('month',Invoice.created_at)
     )
 
     monthly_sales = monthly_sales.all() 
@@ -74,7 +76,7 @@ def get_month_sales():
     sales = []  
 
     for row in monthly_sales:
-        labels.append(row.month)
+        labels.append(f"{int(row.year)}-{int(row.month):02d}")
         sales.append(float(row.sales))
 
 

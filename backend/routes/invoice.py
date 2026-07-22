@@ -364,7 +364,7 @@ def delete_invoice(invoice_id):
                     product_id=product.id,
                     product_name=product.name,
                     user_id=user_id,
-                    invoice_id=invoice.id,
+                    invoice_id=None,
                     previous_stock=previous_stock,
                     changed_quantity=item.quantity,
                     current_stock=product.stock,
@@ -373,6 +373,8 @@ def delete_invoice(invoice_id):
 
         for item in invoice_items:
             db.session.delete(item)
+
+        db.session.flush()
 
         db.session.delete(invoice)    
         db.session.commit()

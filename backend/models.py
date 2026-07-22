@@ -68,7 +68,7 @@ class StockHistory(db.Model):
     product_id = db.Column(db.Integer,db.ForeignKey("product.id"),nullable=False)
     product_name = db.Column(db.String(200),nullable=False)
     user_id = db.Column(db.Integer,db.ForeignKey("user.id"), nullable=False)
-    invoice_id = db.Column(db.Integer,db.ForeignKey("invoice.id"),nullable=True) 
+    invoice_id = db.Column(db.Integer,db.ForeignKey("invoice.id", ondelete="SET NULL"),nullable=True) 
     previous_stock = db.Column(db.Integer,nullable=False)
     changed_quantity = db.Column(db.Integer,nullable=False)
     current_stock = db.Column(db.Integer,nullable=False)
