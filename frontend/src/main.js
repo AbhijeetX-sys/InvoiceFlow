@@ -42,9 +42,7 @@ export function showToast(message, type = 'info') {
 // ==========================================================================
 // SECURE API CLIENT
 // ==========================================================================
-const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-  ? '' 
-  : 'https://invoiceflow-production-2c53.up.railway.app';
+const BASE_URL = 'https://invoiceflow-production-2c53.up.railway.app';
 
 export async function apiFetch(url, options = {}) {
   // Set default headers
