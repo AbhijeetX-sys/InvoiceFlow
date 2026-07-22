@@ -13,6 +13,6 @@ export default defineConfig({
   },
 
   preview: {
-    allowedHosts: ["gallant-presence-production-034d.up.railway.app"]
+    allowedHosts: ["gallant-presence-production-7846.up.railway.app"]
   }
 });
