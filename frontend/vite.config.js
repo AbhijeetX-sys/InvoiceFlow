@@ -1,5 +1,15 @@
 import { defineConfig } from 'vite';
 
+
+import { defineConfig } from "vite";
+
+export default defineConfig({
+  preview: {
+    allowedHosts: ["gallant-presence-production-034d.up.railway.app"]
+  }
+});
+
+
 export default defineConfig({
   server: {
     port: 5173,
