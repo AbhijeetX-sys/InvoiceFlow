@@ -4,8 +4,13 @@ import urllib.request
 import urllib.error
 import os
 
-PORT = 5173
-BACKEND_URL = "http://127.0.0.1:5000"
+PORT = int(os.environ.get("PORT", 5173))
+
+# Dynamic URL routing based on environment
+if os.environ.get("PORT") and not os.environ.get("LOCAL_DEV"):
+    BACKEND_URL = os.environ.get("BACKEND_URL", "https://invoiceflow-production-2c53.up.railway.app")
+else:
+    BACKEND_URL = "http://127.0.0.1:5000"
 
 class ProxyHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
