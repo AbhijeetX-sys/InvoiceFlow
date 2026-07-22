@@ -1,5 +1,9 @@
 from flask import Flask
-from flask_cors import CORS
+try:
+    from flask_cors import CORS
+    has_cors = True
+except ImportError:
+    has_cors = False
 
 from config import Config
 from extensions import db, jwt
@@ -14,7 +18,10 @@ from routes.pdf import pdf
 
 
 app = Flask(__name__)
-CORS(app)
+if has_cors:
+    CORS(app)
+else:
+    app.logger.warning("flask-cors is not installed. CORS is disabled.")
 
 app.config.from_object(Config)
 
