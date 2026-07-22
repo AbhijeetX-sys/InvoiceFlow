@@ -4,4 +4,5 @@ Flask-JWT-Extended
 reportlab
 psycopg2-binary
 flask-cors
+python-dotenv
 gunicorn
