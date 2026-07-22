@@ -333,10 +333,10 @@ def generate_invoice_pdf(invoice_id):
         table_data.append([
             item.product_name,
             str(item.quantity),
-            f"₹ {float(item.price):.2f}",
+            f"INR {float(item.price):.2f}",
             f"{float(item.gst_percentage)}%",
-            f"₹ {gst_amount:.2f}",
-            f"₹ {total:.2f}"
+            f"INR {gst_amount:.2f}",
+            f"INR {total:.2f}"
         ])
 
     table = Table(
@@ -380,9 +380,9 @@ def generate_invoice_pdf(invoice_id):
     subtotal = float(invoice.total_amount) - float(invoice.gst_total)
 
     totals_data = [
-        ["Subtotal", f"₹ {subtotal:.2f}"],
-        ["GST Total", f"₹ {float(invoice.gst_total):.2f}"],
-        ["Grand Total", f"₹ {float(invoice.total_amount):.2f}"]
+        ["Subtotal", f"INR {subtotal:.2f}"],
+        ["GST Total", f"INR {float(invoice.gst_total):.2f}"],
+        ["Grand Total", f"INR {float(invoice.total_amount):.2f}"]
     ]
 
     totals_table = Table(
