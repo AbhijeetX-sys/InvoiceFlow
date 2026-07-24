@@ -98,6 +98,10 @@ Once both servers are running:
 
 ![Invoices](screenshots/invoices.png)
 
+### Stock Log Audit
+
+![Stock Log](screenshots/stock-log.png)
+
 ### Business Profile
 
 ![Business Profile](screenshots/business-profile.png)
